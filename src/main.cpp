@@ -5,33 +5,46 @@
 
 #include "WS2812.pio.h" // This header file gets produced during compilation from the WS2812.pio file
 #include "drivers/logging/logging.h"
-
-#define LED_PIN 14
+#include "drivers/leds/leds.h"
+#include "drivers/pin_def.h"
 
 int main()
 {
     stdio_init_all();
+    leds_init(LED_PIO, LED_SM, LED_PIN, MAX_NUM_LEDS);
 
-    // Initialise PIO0 to control the LED chain
-    uint pio_program_offset = pio_add_program(pio0, &ws2812_program);
-    ws2812_program_init(pio0, 0, pio_program_offset, LED_PIN, 800000, false);
-    uint32_t led_data [1];
-
-    for (;;) {
+    for (;;)
+    {
         // Test the log system
         log(LogLevel::INFORMATION, "Hello world");
 
-        // Turn on the first LED to be a certain colour
-        uint8_t red = 0;
+        uint32_t led_data[1];
+
+        // Turn on the all LEDs to be a certain colour
+        uint8_t red = 10;
         uint8_t green = 0;
-        uint8_t blue = 255;
+        uint8_t blue = 10;
         led_data[0] = (red << 24) | (green << 16) | (blue << 8);
-        pio_sm_put_blocking(pio0, 0, led_data[0]);
+
+        int i;
+        for (i = 0; i < 12; i++)
+        {
+            pio_sm_put_blocking(LED_PIO, LED_SM, led_data[0]);
+        }
+
         sleep_ms(500);
 
-        // Set the first LED off 
-        led_data[0] = 0;
-        pio_sm_put_blocking(pio0, 0, led_data[0]);
+        // Set all LEDs off
+        uint8_t red2 = 0;
+        uint8_t green2 = 0;
+        uint8_t blue2 = 0;
+        led_data[0] = (red2 << 24) | (green2 << 16) | (blue2 << 8);
+        // led_data[0] = 0; // turning off LED
+
+        for (i = 0; i < 12; i++)
+        {
+            pio_sm_put_blocking(LED_PIO, LED_SM, led_data[0]);
+        }
         sleep_ms(500);
     }
 
