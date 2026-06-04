@@ -15,6 +15,8 @@
 static PIO led_pio;
 static uint led_sm;
 static uint led_pin;
+static uint32_t leds_current_data[MAX_NUM_LED]; // Colours to be set to LEDs
+static uint32_t led_current_data[MAX_NUM_LED];  // Colours currently on LEDs
 static uint32_t led_set_data[MAX_NUM_LEDS];     // Colours to be set to LEDs
 static uint32_t led_current_data[MAX_NUM_LEDS]; // Colours currently on LEDs
 
