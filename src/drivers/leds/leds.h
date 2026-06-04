@@ -21,6 +21,14 @@ void init_leds(PIO pio, uint sm, uint pin);
 */
 void set_single_led(uint led_index, uint8_t red, uint8_t green, uint8_t blue);
 
+/**
+* @brief Set all LED colours to one colour (RGB)
+* @param red Red value. Set from 0 - 255
+* @param green Green value. Set from 0 - 255
+* @param blue Blue value. Set from 0 - 255
+*/
+void set_all_leds(uint8_t red, uint8_t green, uint8_t blue);
+
 // Query the status of all LEDs. If not updated, print set colours and current colours of all LEDs
 void query_status_leds();
 

@@ -48,6 +48,16 @@ void set_single_led(uint led_index, uint8_t red, uint8_t green, uint8_t blue)
     is_leds_updated = false;
 }
 
+void set_all_leds(uint8_t red, uint8_t green, uint8_t blue)
+{
+    for (uint i = 0; i < MAX_NUM_LED; i++)
+    {
+        leds_set_data[i] = (red << 24) | (green << 16) | (blue << 8);
+    }
+    
+    is_leds_updated = false;
+}
+
 void clear_all_leds()
 {
     uint8_t red = 0;
@@ -59,7 +69,7 @@ void clear_all_leds()
         leds_set_data[i] = (red << 24) | (green << 16) | (blue << 8);
         pio_sm_put_blocking(led_pio, led_sm, leds_set_data[i]);
     }
-    
+
     update_all_leds();
     sleep_ms(1);
 }
