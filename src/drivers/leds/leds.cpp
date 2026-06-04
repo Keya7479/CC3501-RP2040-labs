@@ -66,7 +66,7 @@ void leds_query_status()
     if (is_leds_updated == false)
     {
         printf("LEDs not updated.\n");
-        printf("------------------------------------------\n");
+        printf("------------------------------------------------------------\n");
         for (uint i = 0; i < MAX_NUM_LED; i++)
         {
             // 0xFF = 1 byte
