@@ -22,7 +22,7 @@ static bool is_leds_updated;
 void init_leds()
 {
     uint pio_program_offset = pio_add_program(LED_PIO, &ws2812_program);
-    ws2812_program_init(LED_PIO, LED_SM, pio_program_offset, MAX_NUM_LED, 800000, false);
+    ws2812_program_init(LED_PIO, LED_SM, pio_program_offset, LED_PIN, 800000, false);
     // Clear all then briefly flash green to indicate LEDs are initialised
     clear_all_leds();
     set_all_leds(GREEN);
