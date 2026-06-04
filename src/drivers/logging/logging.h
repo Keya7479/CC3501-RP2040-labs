@@ -17,6 +17,7 @@ void setLogLevel(LogLevel newLevel);
 /**
  * @brief Log a new message with output as [time level]: msg. Correct syntax log(LogLevel::level, msg)
  * @param level The priority and type of log
+ * @param msg_type Type of message, format ORIGIN TYPE. i.e. LED UPDATE 
  * @param msg Message to be printed
  */
-void log(LogLevel level, const char *msg);
+void log(LogLevel level, const char *msg_type, const char *msg);

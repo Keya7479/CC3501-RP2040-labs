@@ -16,7 +16,7 @@ void setLogLevel(LogLevel newLevel)
     maxLogLevel = newLevel;
 }
 
-void log(LogLevel level, const char *msg)
+void log(LogLevel level, const char *msg_type, const char *msg)
 {
     // Should we show this message?
     if (level < maxLogLevel) {
@@ -42,5 +42,5 @@ void log(LogLevel level, const char *msg)
             break;
         
     };
-    printf("[%u.%03u %s]: %s\n", time_sec, time_decimal, levelStr, msg);
+    printf("[%u.%03u %s %s]: %s\n", time_sec, time_decimal, levelStr, msg_type, msg);
 }
