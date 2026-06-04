@@ -15,20 +15,14 @@
 #define GREEN_TEXT "\033[32m"
 #define WHITE_TEXT "\033[0m"
 
-static PIO led_pio;
-static uint led_sm;
-static uint led_pin;
 static uint32_t leds_set_data[MAX_NUM_LED];     // Colours to be set to LEDs
 static uint32_t leds_current_data[MAX_NUM_LED]; // Colours currently on LEDs
 static bool is_leds_updated;
 
-void init_leds(PIO pio, uint sm, uint pin)
+void init_leds()
 {
-    led_pio = pio;
-    led_sm = sm;
-    led_pin = pin;
-    uint pio_program_offset = pio_add_program(led_pio, &ws2812_program);
-    ws2812_program_init(led_pio, led_sm, pio_program_offset, led_pin, 800000, false);
+    uint pio_program_offset = pio_add_program(LED_PIO, &ws2812_program);
+    ws2812_program_init(LED_PIO, LED_SM, pio_program_offset, MAX_NUM_LED, 800000, false);
     // Clear all then briefly flash green to indicate LEDs are initialised
     clear_all_leds();
     set_all_leds(GREEN);
@@ -67,7 +61,7 @@ void clear_all_leds()
     for (uint i = 0; i < MAX_NUM_LED; i++)
     {
         leds_set_data[i] = (colour.r << 24) | (colour.g << 16) | (colour.b << 8);
-        pio_sm_put_blocking(led_pio, led_sm, leds_set_data[i]);
+        pio_sm_put_blocking(LED_PIO, LED_SM, leds_set_data[i]);
     }
     update_all_leds();
     sleep_ms(1);

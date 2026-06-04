@@ -1,14 +1,8 @@
 #include "colours.h"
 #pragma once
 
-/**
- * @brief Initialise PIO to control the LED chain. By default, all LEDs off (0, 0, 0)
- * @param pio Programmable Input/Output (PIO) block
- * @param sm State machine (sm) number within PIO block
- * @param pin LED pin
- * @param led_total_num Total number of LEDs on the board
- */
-void init_leds(PIO pio, uint sm, uint pin);
+///Initialise PIO to control the LED chain. By default, all LEDs off (0, 0, 0)
+void init_leds();
 
 /**
  * @brief Set a single LED colour (RGB)
