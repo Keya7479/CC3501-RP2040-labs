@@ -36,3 +36,18 @@ static const rgb_colour rgb_colour_table[] =
         {10, 10, 10}, // White
         {0, 0, 0}     // Off
 };
+
+/// Table of various colour names
+/// Includes RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, WHITE, OFF
+static const char *colour_names[] =
+{
+    "RED",
+    "ORANGE",
+    "YELLOW",
+    "GREEN",
+    "BLUE",
+    "PURPLE",
+    "PINK",
+    "WHITE",
+    "OFF"
+};

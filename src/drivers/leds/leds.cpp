@@ -90,16 +90,17 @@ void query_status_leds()
             uint current_g = (leds_current_data[i] >> 16) & 0xFF;
             uint current_b = (leds_current_data[i] >> 8) & 0xFF;
 
+            const char *set_colour_name = rgb_to_colour(set_r, set_g, set_b);
+            const char *current_colour_name = rgb_to_colour(current_r, current_g, current_b);
+
             // If not updated, print red
             if (set_r != current_r || set_g != current_g || set_b != current_b)
             {
-                printf(RED_TEXT "LED %2u: Set RGB(%3u, %3u, %3u) || Current RGB(%3u, %3u, %3u)" WHITE_TEXT "\n", i,
-                       set_r, set_g, set_b, current_r, current_g, current_b);
+                printf(RED_TEXT "LED %2u: Set %-9s || Current %-9s" WHITE_TEXT "\n", i, set_colour_name, current_colour_name);
             }
             else
             {
-                printf("LED %2u: Set RGB(%3u, %3u, %3u) || Current RGB(%3u, %3u, %3u)\n", i,
-                       set_r, set_g, set_b, current_r, current_g, current_b);
+                printf("LED %2u: Set %-9s || Current %-9s\n", i, set_colour_name, current_colour_name);
             }
         }
         printf("------------------------------------------------------------\n");
@@ -125,4 +126,19 @@ void update_all_leds()
 static rgb_colour colour_to_rgb(LedColour colour_name)
 {
     return rgb_colour_table[colour_name];
+}
+
+static const char *rgb_to_colour(uint r, uint g, uint b)
+{
+    for (uint i = 0; i < sizeof(rgb_colour_table) / sizeof(rgb_colour_table[0]); i++)
+    {
+        if (rgb_colour_table[i].r == r &&
+            rgb_colour_table[i].g == g &&
+            rgb_colour_table[i].b == b)
+        {
+            return colour_names[i];
+        }
+    }
+
+    return "NAME ERROR";
 }
