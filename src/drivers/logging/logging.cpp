@@ -11,7 +11,7 @@
 static LogLevel maxLogLevel = LogLevel::INFORMATION;
 
 // --- Device driver functions
-void setLogLevel(LogLevel newLevel)
+void set_level_log(LogLevel newLevel)
 {
     maxLogLevel = newLevel;
 }

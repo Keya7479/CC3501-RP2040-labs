@@ -10,7 +10,7 @@
  * @param pin LED pin
  * @param led_total_num Total number of LEDs on the board
  */
-void leds_init(PIO pio, uint sm, uint pin);
+void init_leds(PIO pio, uint sm, uint pin);
 
 /**
 * @brief Set a single LED colour (RGB)
@@ -19,10 +19,13 @@ void leds_init(PIO pio, uint sm, uint pin);
 * @param green Green value. Set from 0 - 255
 * @param blue Blue value. Set from 0 - 255
 */
-void leds_set_single(uint led_index, uint8_t red, uint8_t green, uint8_t blue);
+void set_single_led(uint led_index, uint8_t red, uint8_t green, uint8_t blue);
 
 // Query the status of all LEDs. If not updated, print set colours and current colours of all LEDs
-void leds_query_status();
+void query_status_leds();
 
 // Clear all LEDs to (0, 0, 0). Both setting and updating all LEDs
-void leds_clear_all();
+void clear_all_leds();
+
+// Update all LEDs to set colours
+void update_all_leds();

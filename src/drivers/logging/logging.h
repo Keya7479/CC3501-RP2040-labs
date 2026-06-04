@@ -12,7 +12,7 @@ enum LogLevel
  * @brief Set the minimum log level to be printed. Correct syntax setLogLevel(LogLevel::level)
  * @param newLevel Messages with a level below this threshold will be discarded
  */
-void setLogLevel(LogLevel newLevel);
+void set_level_log(LogLevel newLevel);
 
 /**
  * @brief Log a new message with output as [time level]: msg. Correct syntax log(LogLevel::level, msg)
