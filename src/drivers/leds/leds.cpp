@@ -32,6 +32,7 @@ void leds_init(PIO pio, uint sm, uint pin)
 
     leds_clear_all();
     is_leds_updated = true;
+    log(LogLevel::INFORMATION, "LED SETUP", "initiated");
 }
 
 void leds_set_single(uint led_index, uint8_t red, uint8_t green, uint8_t blue)
@@ -39,11 +40,11 @@ void leds_set_single(uint led_index, uint8_t red, uint8_t green, uint8_t blue)
     // Check for invalid index (start index = 0, hence 0-11 = 12 leds)
     if (led_index >= MAX_NUM_LED)
     {
-        log(LogLevel::ERROR, "Incorrect LED index: index < total number of leds");
+        log(LogLevel::ERROR, "LED CONFIG", "incorrect LED index: index < total number of leds");
         return;
     }
 
-    leds_current_data[led_index] = (red << 24) | (green << 16) | (blue << 8);
+    leds_set_data[led_index] = (red << 24) | (green << 16) | (blue << 8);
     is_leds_updated = false;
 }
 
@@ -67,7 +68,7 @@ void leds_query_status()
 {
     if (is_leds_updated == false)
     {
-        printf(RED_TEXT "LEDs not updated." WHITE_TEXT "\n");
+        log(LogLevel::INFORMATION, "LED STATUS", RED_TEXT "colours not updated " WHITE_TEXT "printing values...");
         printf("------------------------------------------------------------\n");
         for (uint i = 0; i < MAX_NUM_LED; i++)
         {
@@ -96,6 +97,18 @@ void leds_query_status()
     }
     else
     {
-        printf(GREEN_TEXT "LEDs updated." WHITE_TEXT "\n");
+        log(LogLevel::INFORMATION, "LED STATUS", GREEN_TEXT "colours up to date" WHITE_TEXT);
     }
+}
+
+void leds_update_all()
+{
+    for (uint i = 0; i < MAX_NUM_LED; i++)
+    {
+        pio_sm_put_blocking(LED_PIO, LED_SM, leds_set_data[i]);
+        leds_current_data[i] = leds_set_data[i];
+        is_leds_updated = true;
+    }
+    sleep_ms(1);
+    log(LogLevel::INFORMATION, "LED UPDATE", "colours changed");
 }

@@ -15,10 +15,16 @@ int main()
 
     for (;;)
     {
-        // Test the log system
-        log(LogLevel::INFORMATION, "Hello world");
-
         leds_set_single(0, 255, 255, 255);
+        leds_query_status();
+        leds_update_all();
+        leds_query_status();
+
+        leds_set_single(0, 10, 10, 10);
+        leds_set_single(5, 5, 10, 10);
+        leds_set_single(10, 10, 10, 10);
+        leds_query_status();
+        leds_update_all();
         leds_query_status();
 
         // uint32_t led_data[1];
