@@ -31,6 +31,20 @@ void leds_init(PIO pio, uint sm, uint pin)
     leds_clear_all();
     is_leds_updated = true;
 }
+
+void leds_set_single(uint led_index, uint8_t red, uint8_t green, uint8_t blue)
+{
+    // Check for invalid index (start index = 0, hence 0-11 = 12 leds)
+    if (led_index >= MAX_NUM_LED)
+    {
+        log(LogLevel::ERROR, "Incorrect LED index: index < total number of leds");
+        return;
+    }
+
+    leds_current_data[led_index] = (red << 24) | (green << 16) | (blue << 8);
+    is_leds_updated = false;
+}
+
 void leds_clear_all()
 {
     uint8_t red = 0;
@@ -46,5 +60,23 @@ void leds_clear_all()
 
     sleep_ms(1);
 }
-}
+
+void leds_query_status()
+{
+    if (is_leds_updated == false)
+    {
+        printf("LEDs not updated.\n");
+        printf("------------------------------------------\n");
+        for (uint i = 0; i < MAX_NUM_LED; i++)
+        {
+            // 0xFF = 1 byte
+            printf("LED %2u: Set RGB(%3u, %3u, %3u) || Current RGB(%3u, %3u, %3u)\n", i,
+                   (leds_current_data[i] >> 24) & 0xFF, (leds_current_data[i] >> 16) & 0xFF, (leds_current_data[i] >> 8) & 0xFF,
+                   (led_current_data[i] >> 24) & 0xFF, (led_current_data[i] >> 16) & 0xFF, (led_current_data[i] >> 8) & 0xFF);
+        }
+    }
+    else
+    {
+        printf("LEDs updated.\n");
+    }
 }

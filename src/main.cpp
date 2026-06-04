@@ -18,33 +18,36 @@ int main()
         // Test the log system
         log(LogLevel::INFORMATION, "Hello world");
 
-        uint32_t led_data[1];
+        leds_set_single(0, 255, 255, 255);
+        leds_query_status();
 
-        // Turn on the all LEDs to be a certain colour
-        uint8_t red = 10;
-        uint8_t green = 0;
-        uint8_t blue = 10;
-        led_data[0] = (red << 24) | (green << 16) | (blue << 8);
+        // uint32_t led_data[1];
 
-        int i;
-        for (i = 0; i < 12; i++)
-        {
-            pio_sm_put_blocking(LED_PIO, LED_SM, led_data[0]);
-        }
+        // // Turn on the all LEDs to be a certain colour
+        // uint8_t red = 10;
+        // uint8_t green = 0;
+        // uint8_t blue = 10;
+        // led_data[0] = (red << 24) | (green << 16) | (blue << 8);
 
-        sleep_ms(500);
+        // int i;
+        // for (i = 0; i < 12; i++)
+        // {
+        //     pio_sm_put_blocking(LED_PIO, LED_SM, led_data[0]);
+        // }
 
-        // Set all LEDs off
-        uint8_t red2 = 0;
-        uint8_t green2 = 0;
-        uint8_t blue2 = 0;
-        led_data[0] = (red2 << 24) | (green2 << 16) | (blue2 << 8);
-        // led_data[0] = 0; // turning off LED
+        // sleep_ms(500);
 
-        for (i = 0; i < 12; i++)
-        {
-            pio_sm_put_blocking(LED_PIO, LED_SM, led_data[0]);
-        }
+        // // Set all LEDs off
+        // uint8_t red2 = 0;
+        // uint8_t green2 = 0;
+        // uint8_t blue2 = 0;
+        // led_data[0] = (red2 << 24) | (green2 << 16) | (blue2 << 8);
+        // // led_data[0] = 0; // turning off LED
+
+        // for (i = 0; i < 12; i++)
+        // {
+        //     pio_sm_put_blocking(LED_PIO, LED_SM, led_data[0]);
+        // }
         sleep_ms(500);
     }
 
