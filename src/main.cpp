@@ -11,7 +11,7 @@
 int main()
 {
     stdio_init_all();
-    leds_init(LED_PIO, LED_SM, LED_PIN, MAX_NUM_LEDS);
+    leds_init(LED_PIO, LED_SM, LED_PIN);
 
     for (;;)
     {
