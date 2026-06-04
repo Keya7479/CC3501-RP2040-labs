@@ -10,13 +10,15 @@
 #include "drivers/logging/logging.h"
 #include "drivers/pin_def.h"
 
-// leds_init will set these static variables from global consts defined in main.cpp
-// avoiding having to repeat these variables in arguments for other functions in leds.cpp
+#define RED_TEXT "\033[31m"
+#define GREEN_TEXT "\033[32m"
+#define WHITE_TEXT "\033[0m"
+
 static PIO led_pio;
 static uint led_sm;
 static uint led_pin;
-static uint32_t leds_current_data[MAX_NUM_LED]; // Colours to be set to LEDs
-static uint32_t led_current_data[MAX_NUM_LED];  // Colours currently on LEDs
+static uint32_t leds_set_data[MAX_NUM_LED];     // Colours to be set to LEDs
+static uint32_t leds_current_data[MAX_NUM_LED]; // Colours currently on LEDs
 static bool is_leds_updated;
 
 void leds_init(PIO pio, uint sm, uint pin)
@@ -55,7 +57,7 @@ void leds_clear_all()
     {
         leds_current_data[i] = (red << 24) | (green << 16) | (blue << 8);
         pio_sm_put_blocking(led_pio, led_sm, leds_current_data[i]);
-        led_current_data[i] = (red << 24) | (green << 16) | (blue << 8);
+        leds_current_data[i] = (red << 24) | (green << 16) | (blue << 8);
     }
 
     sleep_ms(1);
@@ -65,18 +67,35 @@ void leds_query_status()
 {
     if (is_leds_updated == false)
     {
-        printf("LEDs not updated.\n");
+        printf(RED_TEXT "LEDs not updated." WHITE_TEXT "\n");
         printf("------------------------------------------------------------\n");
         for (uint i = 0; i < MAX_NUM_LED; i++)
         {
-            // 0xFF = 1 byte
-            printf("LED %2u: Set RGB(%3u, %3u, %3u) || Current RGB(%3u, %3u, %3u)\n", i,
-                   (leds_current_data[i] >> 24) & 0xFF, (leds_current_data[i] >> 16) & 0xFF, (leds_current_data[i] >> 8) & 0xFF,
-                   (led_current_data[i] >> 24) & 0xFF, (led_current_data[i] >> 16) & 0xFF, (led_current_data[i] >> 8) & 0xFF);
+            // Unpack each colour
+            uint set_red = (leds_set_data[i] >> 24) & 0xFF;
+            uint set_green = (leds_set_data[i] >> 24) & 0xFF;
+            uint set_blue = (leds_set_data[i] >> 24) & 0xFF;
+
+            uint current_red = (leds_current_data[i] >> 24) & 0xFF;
+            uint current_green = (leds_current_data[i] >> 24) & 0xFF;
+            uint current_blue = (leds_current_data[i] >> 24) & 0xFF;
+
+            // If not updated, print red
+            if (set_red != current_red || set_green != current_green || set_blue != current_blue)
+            {
+                printf(RED_TEXT "LED %2u: Set RGB(%3u, %3u, %3u) || Current RGB(%3u, %3u, %3u)" WHITE_TEXT "\n", i,
+                       set_red, set_green, set_blue, current_red, current_green, current_blue);
+            }
+            else
+            {
+                printf("LED %2u: Set RGB(%3u, %3u, %3u) || Current RGB(%3u, %3u, %3u)\n", i,
+                       set_red, set_green, set_blue, current_red, current_green, current_blue);
+            }
         }
+        printf("------------------------------------------------------------\n");
     }
     else
     {
-        printf("LEDs updated.\n");
+        printf(GREEN_TEXT "LEDs updated." WHITE_TEXT "\n");
     }
 }
