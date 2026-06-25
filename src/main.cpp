@@ -10,6 +10,7 @@
 #include "drivers/pin_def.h"
 #include <stdlib.h>
 
+#define MAX_NUM_MODES 2
 
 volatile bool is_button_pressed = false;
 volatile uint32_t last_button_press_us = 0;
@@ -17,7 +18,7 @@ volatile uint32_t last_button_press_us = 0;
 enum Mode
 {
     MODE_STANDBY,
-    MODE_ANIMATE
+    MODE_LED_ANIMATE
 };
 
 void button_callback(uint gpio, uint32_t event_mask)
@@ -53,9 +54,10 @@ int main()
 
     for (;;)
     {
+        gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_RISE, true, &button_callback);
         if (is_button_pressed)
         {
-            if (current_mode < 1)
+            if (current_mode < MAX_NUM_MODES - 1)
             {
                 current_mode++;
             }
@@ -69,17 +71,16 @@ int main()
             case 0:
                 // standby
                 set_all_leds(GREEN);
+                update_all_leds();
                 break;
 
             case 1:
                 // LED animation
-                flash_leds_rainbow(250);
                 wave_leds_rainbow(250);
-                exit_wave_leds_rainbow(250);
                 break;
             }
+            is_button_pressed = false;
         }
-        gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_RISE, true, &button_callback);
     }
 
     return 0;
