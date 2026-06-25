@@ -1,6 +1,8 @@
 #pragma once
 
-/// rgb colour representation that stores a colour as 3 seperate r, g and b values
+/// TODO: Find a more elegant way to store RGB colours and names
+
+/// rgb colour representation that stores a colour as 3 seperate r, g, b values
 struct rgb_colour
 {
     uint8_t r;
@@ -50,4 +52,15 @@ static const char *colour_names[] =
     "PINK",
     "WHITE",
     "OFF"
+};
+
+const LedColour rainbow[7] =
+{
+    RED,
+    ORANGE,
+    YELLOW,
+    GREEN,
+    BLUE,
+    PURPLE,
+    PINK
 };
