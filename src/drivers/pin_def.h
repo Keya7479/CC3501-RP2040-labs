@@ -2,6 +2,7 @@
 
 // pin definitions 
 #define LED_PIN 14
+#define BUTTON_PIN 15 
 
 // LED specific definitions
 #define LED_PIO pio0
