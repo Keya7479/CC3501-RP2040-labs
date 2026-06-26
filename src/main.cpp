@@ -16,6 +16,7 @@
 volatile bool is_button_pressed = false;
 volatile uint32_t last_button_press_us = 0;
 
+
 enum Mode
 {
     MODE_STANDBY,
@@ -30,21 +31,9 @@ void button_callback(uint gpio, uint32_t event_mask)
     if (current_time_us - last_button_press_us > 10000) // 10000us = 10ms
     {
         last_button_press_us = current_time_us;
-        log(LogLevel::INFORMATION, "BUTTON STATUS", "pressed");
+        // log(LogLevel::INFORMATION, "BUTTON STATUS", "pressed");
         is_button_pressed = true;
     }
-
-    // if (event_mask & GPIO_IRQ_EDGE_RISE)
-    // {
-    //     printf("rising edge on GPIO %u\n", gpio);
-    //     printf("___________________\n");
-    // }
-
-    // if (event_mask & GPIO_IRQ_EDGE_FALL)
-    // {
-    //     printf("falling edge on GPIO %u\n", gpio);
-    //     printf("___________________\n");
-    // }
 }
 
 int main()
@@ -96,7 +85,13 @@ int main()
             case 2:
                 // Spirit level
                 log(LogLevel::INFORMATION, "MODE STATUS", "spirit level mode");
-                break;
+                uint8_t data[6];
+                for (;;)
+                {
+                    read_accel(ACCEL_OUT_X_L, data, 6);
+                    printf("X-axis: %d, Y-axis: %d, Z-axis: %d\n", combine_axis_data(data), combine_axis_data(data + 2), combine_axis_data(data + 4));
+                    sleep_ms(1000);
+                }
             }
 
             is_button_pressed = false;

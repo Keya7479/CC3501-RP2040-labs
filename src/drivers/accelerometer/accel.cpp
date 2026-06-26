@@ -24,22 +24,27 @@ bool write_reg_accel(uint8_t reg, uint8_t data)
 
 bool read_accel(uint8_t reg, uint8_t *data, size_t length)
 {
+    // enable auto-increment for multi-byte reads which will read until length bytes have been read
+    // to do this, the MSB of the register address must be set to 1
+    uint8_t read_reg = reg;
+    if (length > 1)
+    {
+        read_reg |= 0x80; // MSB = 1 (1000 0000) 
+    }
+
     // tell the device which address to read
-    if (1 != i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &reg, 1, true))
+    if (1 != i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &read_reg, 1, true))
     {
         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to select register address for reading.");
         return false;
     }
 
     // read the data
-    int bytes_read = i2c_read_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, data, length, false);
-    if (bytes_read != length)
+    if (length != i2c_read_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, data, length, false))
     {
         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to read data.");
         return false;
     }
-    // uint8_t raw_data[2];
-    // int16_t data = (int16_t)(raw_data[0] | (raw_data[1] << 8)) >> 6;
     return true;
 }
 
@@ -49,29 +54,22 @@ void init_accel()
     gpio_set_function(ACCEL_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(ACCEL_SCL_PIN, GPIO_FUNC_I2C);
 
-    // shouldn't need to pull up internal resistors as pcb has external pull-ups
-    // gpio_pull_up(ACCEL_SDA_PIN);
-    // gpio_pull_up(ACCEL_SCL_PIN);
-
     // read the value of the WHO_AM_I register and confirm that the returned value is correct
     uint8_t who_am_i = 0;
-    if (!read_accel(ACCEL_WHO_AM_I_ADDRESS, &who_am_i, 1))
+    read_accel(ACCEL_WHO_AM_I_ADDRESS, &who_am_i, 1);
+    if (who_am_i != ACCEL_WHO_AM_I)
     {
         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "WHO_AM_I register returned unexpected value");
+        return;
     }
-    else
-    {
-        log(LogLevel::INFORMATION, "ACCELEROMETER SETUP", "completed initialisation");
-    }
+
+    log(LogLevel::INFORMATION, "ACCELEROMETER SETUP", "completed initialisation");
 
     // configure for 400Hz sampling rate (default accel range appropriate)
     write_reg_accel(ACCEL_CTRL_REG_1, 0b01110111);
 }
 
-// // accelerometer has 10-bit readings in “normal mode”, use left justified number extension to get 16-bit signed integer
-// uint16_t convert_data_accel(uint8_t *raw_data)
-// {
-//     uint8_t raw_data[2];
-//     int16_t data = (int16_t)(raw_data[0] | (raw_data[1] << 8)) >> 6;
-//     return data;
-// }
+int16_t combine_axis_data(uint8_t *data)
+{
+    return (int16_t)(data[0] | (data[1] << 8)) >> 6;
+}

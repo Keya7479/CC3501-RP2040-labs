@@ -22,3 +22,11 @@
 #define ACCEL_CTRL_REG_1 0x20 // sampling (data) rate: 1 Hz to 5.3 kHz. Default value: 0000 (power-down mode).
 #define ACCEL_CTRL_REG_4 0x23 // accel range:  ±2g/±4g/±8g/±16g. Default is ±2g. 
 
+// Register addresses for axises
+#define ACCEL_OUT_X_L 0x28 
+// 0x28  OUT_X_L
+// 0x29  OUT_X_H
+// 0x2A  OUT_Y_L
+// 0x2B  OUT_Y_H
+// 0x2C  OUT_Z_L
+// 0x2D  OUT_Z_H
