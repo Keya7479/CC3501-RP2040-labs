@@ -42,5 +42,5 @@ void log(LogLevel level, const char *msg_type, const char *msg)
             break;
         
     };
-    printf("[%u.%03u %s %s]: %s\n", time_sec, time_decimal, levelStr, msg_type, msg);
+    printf("[%u.%03u %s] %s: %s\n", time_sec, time_decimal, levelStr, msg_type, msg);
 }
