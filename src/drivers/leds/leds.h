@@ -30,4 +30,4 @@ void update_all_leds();
 static rgb_colour colour_to_rgb(LedColour colour_name);
 
 // Convert rgb value to colour name
-static const char *rgb_to_colour(uint r, uint g, uint b);
+static const char *rgb_to_colour(uint8_t r, uint8_t g, uint8_t b);

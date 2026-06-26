@@ -3,13 +3,13 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
-#include "hardware/pio.h"
 
 #include "WS2812.pio.h" // This header file gets produced during compilation from the WS2812.pio file
 #include "leds.h"
 #include "colours.h"
 #include "drivers/logging/logging.h"
-#include "drivers/pin_def.h"
+#include "drivers/hardware_def.h"
+#include "hardware/i2c.h"
 
 #define RED_TEXT "\033[31m"
 #define GREEN_TEXT "\033[32m"
@@ -122,7 +122,7 @@ static rgb_colour colour_to_rgb(LedColour colour_name)
     return rgb_colour_table[colour_name];
 }
 
-static const char *rgb_to_colour(uint r, uint g, uint b)
+static const char *rgb_to_colour(uint8_t r, uint8_t g, uint8_t b)
 {
     for (uint i = 0; i < sizeof(rgb_colour_table) / sizeof(rgb_colour_table[0]); i++)
     {

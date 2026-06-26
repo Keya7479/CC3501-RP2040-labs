@@ -5,7 +5,7 @@
 #include "drivers/leds/leds.h"
 #include "drivers/leds/colours.h"
 #include "leds_animation.h"
-#include "drivers/pin_def.h"
+#include "drivers/hardware_def.h"
 #include <stdlib.h>
 
 #define RAINBOW_LENGTH 7
