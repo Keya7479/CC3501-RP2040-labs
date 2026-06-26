@@ -25,10 +25,6 @@ void init_leds()
     ws2812_program_init(LED_PIO, LED_SM, pio_program_offset, LED_PIN, 800000, false);
     // Clear all then briefly flash green to indicate LEDs are initialised
     clear_all_leds();
-    set_all_leds(GREEN);
-    update_all_leds();
-    sleep_ms(1000);
-    clear_all_leds();
     log(LogLevel::INFORMATION, "LED SETUP", "completed initialisation");
 }
 
