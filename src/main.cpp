@@ -50,9 +50,11 @@ void button_callback(uint gpio, uint32_t event_mask)
 int main()
 {
     stdio_init_all();
-    init_leds();
     gpio_init(BUTTON_PIN);
+    init_leds();
     init_accel();
+
+    // Set to STANDBY mode
     int current_mode = MODE_STANDBY;
     log(LogLevel::INFORMATION, "MODE STATUS", "in standby mode");
     set_all_leds(GREEN);
@@ -75,27 +77,25 @@ int main()
             }
 
             // Change to updated mode
+            clear_all_leds();
             switch (current_mode)
             {
             case 0:
                 // standby
-                clear_all_leds();
-                log(LogLevel::INFORMATION, "MODE STATUS", "in standby mode");
+                log(LogLevel::INFORMATION, "MODE STATUS", "standby mode");
                 set_all_leds(GREEN);
                 update_all_leds();
                 break;
 
             case 1:
                 // LED animation
-                clear_all_leds();
-                log(LogLevel::INFORMATION, "MODE STATUS", "in LED animation mode");
+                log(LogLevel::INFORMATION, "MODE STATUS", "LED animation mode");
                 wave_leds_rainbow(250);
                 break;
 
             case 2:
                 // Spirit level
-                clear_all_leds();
-                log(LogLevel::INFORMATION, "MODE STATUS", "in spirit level mode");
+                log(LogLevel::INFORMATION, "MODE STATUS", "spirit level mode");
                 break;
             }
 
