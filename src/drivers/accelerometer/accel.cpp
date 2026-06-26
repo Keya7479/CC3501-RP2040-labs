@@ -7,8 +7,6 @@
 #include "drivers/hardware_def.h"
 #include "drivers/logging/logging.h"
 
-
-
 bool write_reg_accel(uint8_t reg, uint8_t data)
 {
     // need two bytes to write to i2c bus: register address and data
@@ -24,6 +22,27 @@ bool write_reg_accel(uint8_t reg, uint8_t data)
     return true;
 }
 
+bool read_accel(uint8_t reg, uint8_t *data, size_t length)
+{
+    // tell the device which address to read
+    if (1 != i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &reg, 1, true))
+    {
+        log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to select register address for reading.");
+        return false;
+    }
+
+    // read the data
+    int bytes_read = i2c_read_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, data, length, false);
+    if (bytes_read != length)
+    {
+        log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to read data.");
+        return false;
+    }
+    // uint8_t raw_data[2];
+    // int16_t data = (int16_t)(raw_data[0] | (raw_data[1] << 8)) >> 6;
+    return true;
+}
+
 void init_accel()
 {
     i2c_init(ACCEL_I2C_INSTANCE, 400 * 1000); // communication speed 400kHz
@@ -35,52 +54,24 @@ void init_accel()
     // gpio_pull_up(ACCEL_SCL_PIN);
 
     // read the value of the WHO_AM_I register and confirm that the returned value is correct
-    uint8_t reg = ACCEL_WHO_AM_I_ADDRESS;
     uint8_t who_am_i = 0;
-
-    i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &reg, 1, true);
-    int bytes_read = i2c_read_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &who_am_i, 1, false);
-
-    if (bytes_read != 1)
+    if (!read_accel(ACCEL_WHO_AM_I_ADDRESS, &who_am_i, 1))
     {
-        log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to read LIS3DH WHO_AM_I register.");
+        log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "WHO_AM_I register returned unexpected value");
     }
     else
     {
-        if (who_am_i != ACCEL_WHO_AM_I)
-        {
-            log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "WHO_AM_I register returned unexpected value");
-        }
-        else
-        {
-            log(LogLevel::INFORMATION, "ACCELEROMETER SETUP", "completed initialisation");
-        }
+        log(LogLevel::INFORMATION, "ACCELEROMETER SETUP", "completed initialisation");
     }
 
-    write_reg_accel(ACCEL_CTRL_REG_1, 0b01110111); // configure for 400Hz sampling rate
+    // configure for 400Hz sampling rate (default accel range appropriate)
+    write_reg_accel(ACCEL_CTRL_REG_1, 0b01110111);
 }
 
-
-// // “reg” is the register to read
-// // “data” is a pointer to a buffer into which the data will be placed
-// // “length” is the number of bytes to read
-// bool read_accel(uint8_t reg, uint8_t *data, size_t length)
+// // accelerometer has 10-bit readings in “normal mode”, use left justified number extension to get 16-bit signed integer
+// uint16_t convert_data_accel(uint8_t *raw_data)
 // {
-//     // tell the device which address we want to read
-//     if (1 != i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &reg, 1, true))
-//     {
-//         // You need to pass the pointer to the register address because
-//         // i2c_write_blocking expects a pointer to a buffer of data.
-//         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to select register address for reading.");
-//         return false;
-//     }
-
-//     // now read the data
-//     int bytes_read = i2c_read_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, data, length, false);
-//     if (bytes_read != length)
-//     {
-//         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to read data.");
-//         return false;
-//     }
-//     return true;
+//     uint8_t raw_data[2];
+//     int16_t data = (int16_t)(raw_data[0] | (raw_data[1] << 8)) >> 6;
+//     return data;
 // }
