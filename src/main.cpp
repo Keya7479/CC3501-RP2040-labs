@@ -45,7 +45,7 @@ int main()
 
     // Set to STANDBY mode
     int current_mode = MODE_STANDBY;
-    log(LogLevel::INFORMATION, "MODE STATUS", "in standby mode");
+    log(LogLevel::INFORMATION, "MODE STATUS", "standby mode");
     set_all_leds(GREEN);
     update_all_leds();
 
@@ -85,11 +85,11 @@ int main()
             case 2:
                 // Spirit level
                 log(LogLevel::INFORMATION, "MODE STATUS", "spirit level mode");
-                uint8_t data[6];
+                int16_t data[3];
                 for (;;)
                 {
-                    read_accel(ACCEL_OUT_X_L, data, 6);
-                    printf("X-axis: %d, Y-axis: %d, Z-axis: %d\n", combine_axis_data(data), combine_axis_data(data + 2), combine_axis_data(data + 4));
+                    read_raw_axis_accel(ACCEL_OUT_X_L, data, 3);
+                    printf("X-axis: %d, Y-axis: %d, Z-axis: %d\n", data[0], data[1], data[2]);
                     sleep_ms(1000);
                 }
             }

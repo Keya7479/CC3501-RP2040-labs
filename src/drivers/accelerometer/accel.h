@@ -13,17 +13,23 @@ void init_accel();
 bool write_reg_accel(uint8_t reg, uint8_t data);
 
 /**
- * @brief Read a register on the accelerometer. Register does not need multi-byte read enabled, if length > 1 then auto-increment will be enabled within this function
- * and will step through registers until length bytes are read
+ * @brief Read a register on the accelerometer. Auto-increment is not automatically enabled
  * @param reg Register to read (address of register)
  * @param data Pointer to a buffer into which the data will be placed
- * @param length Number of bytes to read
+ * @param length Number of bytes to read 
  * @return True if read was successful, false otherwise
  */
 bool read_accel(uint8_t reg, uint8_t *data, size_t length);
 
 /**
- * @brief Combine low and high byte of axis data into a single 16-bit signed integer
- * @param data Pointer to a buffer with the low and high byte of an axis's data
+ * @brief Read from axis registers on the accelerometer. Auto-increment is automatically enabled
+ * 
+ * Read starts from specified address and auto-increments until length of bytes are read.
+ * Expects to read an axis's data and will combine the low and high bytes and right-shift 
+ * 
+ * @param register_address Register to read (address of register), if length > 1 then auto-increment will be enabled
+ * @param data Pointer to a buffer into which the data will be placed, must be at least length bytes long
+ * @param number_of_axises Number of axises to read 
+ * @return True if read was successful, false otherwise
  */
-int16_t combine_axis_data(uint8_t *data);
+bool read_raw_axis_accel(uint8_t register_address, int16_t *data, size_t number_of_axises);

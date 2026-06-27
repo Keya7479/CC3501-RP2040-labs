@@ -24,16 +24,8 @@ bool write_reg_accel(uint8_t reg, uint8_t data)
 
 bool read_accel(uint8_t reg, uint8_t *data, size_t length)
 {
-    // enable auto-increment for multi-byte reads which will read until length bytes have been read
-    // to do this, the MSB of the register address must be set to 1
-    uint8_t read_reg = reg;
-    if (length > 1)
-    {
-        read_reg |= 0x80; // MSB = 1 (1000 0000) 
-    }
-
     // tell the device which address to read
-    if (1 != i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &read_reg, 1, true))
+    if (1 != i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &reg, 1, true))
     {
         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to select register address for reading.");
         return false;
@@ -44,6 +36,27 @@ bool read_accel(uint8_t reg, uint8_t *data, size_t length)
     {
         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "Failed to read data.");
         return false;
+    }
+    return true;
+}
+
+bool read_raw_axis_accel(uint8_t reg, int16_t *data, size_t number_of_axises)
+{
+    // enable auto-increment for multi-byte reads which will read until number_of_axises are read
+    // to do this, the MSB of the register address must be set to 1
+    uint8_t read_reg = reg | 0x80; // MSB = 1 (1000 0000)
+    size_t number_of_bytes = number_of_axises * 2; // 2 bytes required per axis (high and low)
+    uint8_t uncombined_data[number_of_bytes];
+
+    if (!read_accel(read_reg, uncombined_data, number_of_bytes))
+    {
+        return false;
+    }
+
+    // combine low and high bytes into a 16-bit signed integer
+    for (size_t i = 0; i < number_of_axises; i++)
+    {
+        data[i] = (int16_t)(uncombined_data[i * 2] | (uncombined_data[i * 2 + 1] << 8)) >> 6;
     }
     return true;
 }
@@ -67,9 +80,4 @@ void init_accel()
 
     // configure for 400Hz sampling rate (default accel range appropriate)
     write_reg_accel(ACCEL_CTRL_REG_1, 0b01110111);
-}
-
-int16_t combine_axis_data(uint8_t *data)
-{
-    return (int16_t)(data[0] | (data[1] << 8)) >> 6;
 }
