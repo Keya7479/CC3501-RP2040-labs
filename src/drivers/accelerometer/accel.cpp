@@ -44,7 +44,7 @@ bool read_raw_axis_accel(uint8_t reg, int16_t *data, size_t number_of_axises)
 {
     // enable auto-increment for multi-byte reads which will read until number_of_axises are read
     // to do this, the MSB of the register address must be set to 1
-    uint8_t read_reg = reg | 0x80; // MSB = 1 (1000 0000)
+    uint8_t read_reg = reg | 0x80;                 // MSB = 1 (1000 0000)
     size_t number_of_bytes = number_of_axises * 2; // 2 bytes required per axis (high and low)
     uint8_t uncombined_data[number_of_bytes];
 
@@ -82,3 +82,11 @@ void init_accel()
     write_register_accel(ACCEL_CTRL_REG_1, 0b01110111);
 }
 
+void convert_raw_data_to_g(int16_t *raw_data, size_t length_of_raw_data, float *g_data)
+{
+    float conversion_factor = 0.004f; 
+    for (size_t i = 0; i < length_of_raw_data; i++)
+    {
+        g_data[i] = raw_data[i] * conversion_factor;
+    }
+}

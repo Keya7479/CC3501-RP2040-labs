@@ -16,7 +16,6 @@
 volatile bool is_button_pressed = false;
 volatile uint32_t last_button_press_us = 0;
 
-
 enum Mode
 {
     MODE_STANDBY,
@@ -85,11 +84,14 @@ int main()
             case 2:
                 // Spirit level
                 log(LogLevel::INFORMATION, "MODE STATUS", "spirit level mode");
-                int16_t data[3];
+                int16_t raw_data[3];
+                float g_data[3];
                 for (;;)
                 {
-                    read_raw_axis_accel(ACCEL_OUT_X_L, data, 3);
-                    printf("X-axis: %d, Y-axis: %d, Z-axis: %d\n", data[0], data[1], data[2]);
+                    read_raw_axis_accel(ACCEL_OUT_X_L, raw_data, 3);
+                    convert_raw_data_to_g(raw_data, 3, g_data);
+                    printf("RAW: X-axis: %d, Y-axis: %d, Z-axis: %d\n", raw_data[0], raw_data[1], raw_data[2]);
+                    printf("G: X-axis: %.3f g, Y-axis: %.3f g, Z-axis: %.3f g\n", g_data[0], g_data[1], g_data[2]);
                     sleep_ms(1000);
                 }
             }

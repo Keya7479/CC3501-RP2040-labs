@@ -33,3 +33,11 @@ bool read_register_accel(uint8_t reg, uint8_t *data, size_t length);
  * @return True if read was successful, false otherwise
  */
 bool read_raw_axis_accel(uint8_t reg, int16_t *data, size_t number_of_axises);
+
+/**
+ * @brief Convert raw accelerometer axis data to units of gs (g = 9.81 m/s2)
+ * @param raw_data Raw accelerometer data
+ * @param length_of_raw_data Length of the raw data array
+ * @param g_data Pointer to a buffer into which the converted data will be placed
+ */
+void convert_raw_data_to_g(int16_t *raw_data, size_t length_of_raw_data, float *g_data);
