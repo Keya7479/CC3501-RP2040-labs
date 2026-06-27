@@ -7,7 +7,7 @@
 #include "drivers/hardware_def.h"
 #include "drivers/logging/logging.h"
 
-bool write_reg_accel(uint8_t reg, uint8_t data)
+bool write_register_accel(uint8_t reg, uint8_t data)
 {
     // need two bytes to write to i2c bus: register address and data
     uint8_t buf[2];
@@ -22,7 +22,7 @@ bool write_reg_accel(uint8_t reg, uint8_t data)
     return true;
 }
 
-bool read_accel(uint8_t reg, uint8_t *data, size_t length)
+bool read_register_accel(uint8_t reg, uint8_t *data, size_t length)
 {
     // tell the device which address to read
     if (1 != i2c_write_blocking(ACCEL_I2C_INSTANCE, ACCEL_I2C_ADDRESS, &reg, 1, true))
@@ -48,7 +48,7 @@ bool read_raw_axis_accel(uint8_t reg, int16_t *data, size_t number_of_axises)
     size_t number_of_bytes = number_of_axises * 2; // 2 bytes required per axis (high and low)
     uint8_t uncombined_data[number_of_bytes];
 
-    if (!read_accel(read_reg, uncombined_data, number_of_bytes))
+    if (!read_register_accel(read_reg, uncombined_data, number_of_bytes))
     {
         return false;
     }
@@ -69,7 +69,7 @@ void init_accel()
 
     // read the value of the WHO_AM_I register and confirm that the returned value is correct
     uint8_t who_am_i = 0;
-    read_accel(ACCEL_WHO_AM_I_ADDRESS, &who_am_i, 1);
+    read_register_accel(ACCEL_WHO_AM_I_ADDRESS, &who_am_i, 1);
     if (who_am_i != ACCEL_WHO_AM_I)
     {
         log(LogLevel::ERROR, "ACCELEROMETER COMMUNICATION", "WHO_AM_I register returned unexpected value");
@@ -79,5 +79,6 @@ void init_accel()
     log(LogLevel::INFORMATION, "ACCELEROMETER SETUP", "completed initialisation");
 
     // configure for 400Hz sampling rate (default accel range appropriate)
-    write_reg_accel(ACCEL_CTRL_REG_1, 0b01110111);
+    write_register_accel(ACCEL_CTRL_REG_1, 0b01110111);
 }
+
