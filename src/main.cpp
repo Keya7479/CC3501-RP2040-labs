@@ -119,7 +119,7 @@ int main()
             print_mode_change_log("spirit level mode");
             int16_t raw_data[2];
             float g_data[2];
-            run_spirit_level(raw_data, g_data);
+            run_spirit_level(raw_data, g_data, 0.05f);
             sleep_ms_interuptable(1000);
         }
     }
