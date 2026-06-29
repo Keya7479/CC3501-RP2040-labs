@@ -11,6 +11,7 @@
 #define RAINBOW_LENGTH 7
 
 /// TODO: Clean this up, fix animation 
+/// TODO: Change all sleep_ms to use sleep_ms_interuptable function made in main.cpp
 
 void flash_leds_rainbow(uint time_interval)
 {

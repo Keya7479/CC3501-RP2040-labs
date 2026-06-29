@@ -51,9 +51,10 @@ if(CrossCompiling)
         PUBLIC
         src/main.cpp
         src/drivers/leds/leds.cpp
-        src/drivers/leds_animation/leds_animation.cpp
+        src/leds_animation/leds_animation.cpp
         src/drivers/logging/logging.cpp
         src/drivers/accelerometer/accel.cpp
+        src/spirit_level/spirit_level.cpp
     )
     target_include_directories(labs
         PUBLIC 
@@ -99,9 +100,10 @@ else()
         PUBLIC
         src/main.cpp
         src/drivers/leds/leds.cpp
-        src/drivers/leds_animation/leds_animation.cpp
+        src/leds_animation/leds_animation.cpp
         src/drivers/logging/logging.cpp
         src/drivers/accelerometer/accel.cpp
+        src/spirit_level/spirit_level.cpp
         tests/mocks/pico/stdlib.cpp
         tests/mocks/pico/time.cpp
         tests/mocks/hardware/gpio.cpp
