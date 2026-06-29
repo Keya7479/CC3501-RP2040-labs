@@ -6,15 +6,20 @@
 #include "WS2812.pio.h" // This header file gets produced during compilation from the WS2812.pio file
 #include "drivers/logging/logging.h"
 #include "drivers/leds/leds.h"
-#include "drivers/leds_animation/leds_animation.h"
 #include "drivers/accelerometer/accel.h"
+#include "spirit_level/spirit_level.h"
+#include "leds_animation/leds_animation.h"
 #include "drivers/hardware_def.h"
 #include <stdlib.h>
+#include <cmath>
 
 #define MAX_NUM_MODES 3
 
 volatile bool is_button_pressed = false;
 volatile uint32_t last_button_press_us = 0;
+volatile bool is_mode_updated = false;
+
+/// TODO: move functions into other file
 
 enum Mode
 {
@@ -22,6 +27,20 @@ enum Mode
     MODE_LED_ANIMATE,
     MODE_SPIRIT_LEVEL
 };
+
+// sleep until total_time_ms but can be interupted if button is pressed
+void sleep_ms_interuptable(uint16_t total_time_ms)
+{
+    for (uint16_t current_time_ms = 0; current_time_ms < total_time_ms; current_time_ms += 10)
+    {
+        if (is_button_pressed)
+        {
+            return;
+        }
+        sleep_ms(10);
+    }
+    return;
+}
 
 void button_callback(uint gpio, uint32_t event_mask)
 {
@@ -35,68 +54,73 @@ void button_callback(uint gpio, uint32_t event_mask)
     }
 }
 
+uint8_t new_mode(uint8_t current_mode)
+{
+    // Update mode
+    if (current_mode < MAX_NUM_MODES - 1)
+    {
+        return current_mode + 1;
+    }
+    else
+    {
+        return MODE_STANDBY;
+    }
+}
+
+void print_mode_change_log(const char *mode)
+{
+    if (!is_mode_updated)
+    {
+        log(LogLevel::INFORMATION, "MODE STATUS", mode);
+    }
+    is_mode_updated = true;
+}
+
 int main()
 {
     stdio_init_all();
     gpio_init(BUTTON_PIN);
     init_leds();
     init_accel();
+    gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_RISE, true, &button_callback);
 
     // Set to STANDBY mode
-    int current_mode = MODE_STANDBY;
-    log(LogLevel::INFORMATION, "MODE STATUS", "standby mode");
+    /// TODO remove this repeated code 
+    uint8_t current_mode = MODE_STANDBY;
+    print_mode_change_log("standby mode");
     set_all_leds(GREEN);
     update_all_leds();
 
     for (;;)
     {
-        // if button pressed, change mode
-        gpio_set_irq_enabled_with_callback(BUTTON_PIN, GPIO_IRQ_EDGE_RISE, true, &button_callback);
         if (is_button_pressed)
         {
-            // Update mode
-            if (current_mode < MAX_NUM_MODES - 1)
-            {
-                current_mode++;
-            }
-            else
-            {
-                current_mode = MODE_STANDBY;
-            }
-
-            // Change to updated mode
             clear_all_leds();
-            switch (current_mode)
-            {
-            case 0:
-                // standby
-                log(LogLevel::INFORMATION, "MODE STATUS", "standby mode");
-                set_all_leds(GREEN);
-                update_all_leds();
-                break;
-
-            case 1:
-                // LED animation
-                log(LogLevel::INFORMATION, "MODE STATUS", "LED animation mode");
-                wave_leds_rainbow(250);
-                break;
-
-            case 2:
-                // Spirit level
-                log(LogLevel::INFORMATION, "MODE STATUS", "spirit level mode");
-                int16_t raw_data[3];
-                float g_data[3];
-                for (;;)
-                {
-                    read_raw_axis_accel(ACCEL_OUT_X_L, raw_data, 3);
-                    convert_raw_data_to_g(raw_data, 3, g_data);
-                    printf("RAW: X-axis: %d, Y-axis: %d, Z-axis: %d\n", raw_data[0], raw_data[1], raw_data[2]);
-                    printf("G: X-axis: %.3f g, Y-axis: %.3f g, Z-axis: %.3f g\n", g_data[0], g_data[1], g_data[2]);
-                    sleep_ms(1000);
-                }
-            }
-
+            current_mode = new_mode(current_mode);
+            is_mode_updated = false;
             is_button_pressed = false;
+        }
+
+        // Change to updated mode
+        switch (current_mode)
+        {
+        case MODE_STANDBY:
+            print_mode_change_log("standby mode");
+            set_all_leds(GREEN);
+            update_all_leds();
+            break;
+
+        case MODE_LED_ANIMATE:
+            print_mode_change_log("LED animation mode");
+            wave_leds_rainbow(250);
+            break;
+
+        case MODE_SPIRIT_LEVEL:
+            print_mode_change_log("spirit level mode");
+            int16_t raw_data[2];
+            float g_data[2];
+            run_spirit_level(raw_data, g_data);
+            sleep_ms_interuptable(1000);
         }
     }
 
