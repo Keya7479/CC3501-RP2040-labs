@@ -54,6 +54,7 @@ if(CrossCompiling)
         src/leds_animation/leds_animation.cpp
         src/drivers/logging/logging.cpp
         src/drivers/accelerometer/accel.cpp
+        src/drivers/microphone/microphone.cpp
         src/spirit_level/spirit_level.cpp
     )
     target_include_directories(labs
@@ -83,6 +84,7 @@ if(CrossCompiling)
         hardware_watchdog
         hardware_clocks
         hardware_pwm
+        hardware_adc
     )
 
     pico_add_extra_outputs(labs)
@@ -103,6 +105,7 @@ else()
         src/leds_animation/leds_animation.cpp
         src/drivers/logging/logging.cpp
         src/drivers/accelerometer/accel.cpp
+        src/drivers/microphone/microphone.cpp
         src/spirit_level/spirit_level.cpp
         tests/mocks/pico/stdlib.cpp
         tests/mocks/pico/time.cpp

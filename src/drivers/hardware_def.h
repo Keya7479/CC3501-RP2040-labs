@@ -30,3 +30,9 @@
 // 0x2B  OUT_Y_H
 // 0x2C  OUT_Z_L
 // 0x2D  OUT_Z_H
+
+// Microphone specific definitions
+#define MIC_OUT_PIN 26
+#define MIC_ADC_INPUT 0
+#define ADC_CLK 48000000.0f
+#define ADC_RESOLUTION 4095
