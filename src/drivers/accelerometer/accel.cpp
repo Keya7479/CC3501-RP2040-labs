@@ -79,11 +79,13 @@ void init_accel()
     log(LogLevel::INFORMATION, "ACCELEROMETER SETUP", "completed initialisation");
 
     // configure for 400Hz sampling rate (default accel range appropriate)
+    /// TODO: make sampling rate customisable 
     write_register_accel(ACCEL_CTRL_REG_1, 0b01110111);
 }
 
 void convert_raw_data_to_g(int16_t *raw_data, size_t length_of_raw_data, float *g_data)
 {
+    /// TODO: change conversion factor to be customisable based on accel operating mode
     float conversion_factor = 0.004f; 
     for (size_t i = 0; i < length_of_raw_data; i++)
     {
